@@ -8,6 +8,10 @@ class TasksController < ApplicationController
       @tasks = current_user.tasks.order(id: :desc).page(params[:page])
   end
   
+  def show
+    @task = Task.find(params[:id])
+  end
+  
   def new
     @task = current_user.tasks.build
   end
@@ -23,11 +27,29 @@ class TasksController < ApplicationController
       render 'toppages/index'
     end
   end
+  
+  def edit
+    @task = Task.find(params[:id])
+  end
+
+  def update
+    @task = Task.find(params[:id])
+
+    if @task.update(task_params)
+      flash[:success] = 'Taskは正常に更新されました'
+      redirect_to @task
+    else
+      flash.now[:danger] = 'Taskは更新されませんでした'
+      render :edit
+    end
+  end
 
   def destroy
+    @task = Task.find(params[:id])
     @task.destroy
-    flash[:success] = 'メッセージを削除しました。'
-    redirect_back(fallback_location: root_path)
+
+    flash[:success] = 'Taskは正常に削除されました'
+    redirect_to tasks_url
   end
   
    private
